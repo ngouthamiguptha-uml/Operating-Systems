@@ -2,9 +2,9 @@
 
 This program demonstrates inter-process communication (IPC) using Producer-Consumer example.
 It uses the following POSIX/Linux system calls and headers:
-    fork() to create a child process
-    pipe() for communication between parent and child
-    sys/wait.h to synchronize processes
+   - fork() to create a child process
+   - pipe() for communication between parent and child
+   - sys/wait.h to synchronize processes
 
 Because this code uses **POSIX/Linux** headers and syscalls (e.g., `fork()`, `pipe()`, `wait()`), so it must be compiled/run on **Linux**. On Windows, the recommended way is **WSL (Ubuntu)**.
 
@@ -41,10 +41,10 @@ Because this code uses **POSIX/Linux** headers and syscalls (e.g., `fork()`, `pi
 
 ### Install dependencies on Ubuntu / WSL
 
+```bash
 sudo apt update
-
 sudo apt install build-essential
-
+```
 ## Instructions to compile and run
 
 This program must be run on Linux (or WSL Ubuntu).
