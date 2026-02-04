@@ -1,5 +1,6 @@
-1. This program demonstrates inter-process communication (IPC) using Producer-Consumer example.
-   
+## 1. Process and Inter-Process Communication (IPC) 
+
+This program demonstrates inter-process communication (IPC) using Producer-Consumer example.
 It uses the following POSIX/Linux system calls and headers:
     fork() to create a child process
     pipe() for communication between parent and child
@@ -41,9 +42,10 @@ Because this code uses **POSIX/Linux** headers and syscalls (e.g., `fork()`, `pi
 ### Install dependencies on Ubuntu / WSL
 
 sudo apt update
+
 sudo apt install build-essential
 
-## How to compile and run
+## Instructions to compile and run
 
 This program must be run on Linux (or WSL Ubuntu).
 It will NOT compile correctly on Windows alone because it uses POSIX system calls.
@@ -54,14 +56,16 @@ It will NOT compile correctly on Windows alone because it uses POSIX system call
 3. Navigate to the repo:
    cd /mnt/d/<your-folder-path>/Operating-Systems/HWs/HW0
 4. Compile & run:
-    gcc consumer_producer.c -o consumer_producer
-    ./consumer_producer
+- gcc consumer_producer.c -o consumer_producer
+- ./consumer_producer
 
 ## References
 
 - Brown University. *CSCI 0300: Lecture 18 — Processes and IPC*. https://cs.brown.edu/courses/csci0300/2022/notes/l18.html
 
-2. Simple Data Structure - 
+---------------
+
+## 2. Simple Data Structure - 
 
 ## Program Design:
 
@@ -86,8 +90,8 @@ The main() function tests the stack by performing a series of push and pop opera
 
 ## Instructions to compile and run the program:
 
-gcc Simple_DS.c -o Simple_DS.exe
-.\Simple_DS.exe
+- gcc Simple_DS.c -o Simple_DS.exe
+- .\Simple_DS.exe
 
-
+---------------
 
