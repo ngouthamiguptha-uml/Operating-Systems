@@ -56,8 +56,8 @@ It will NOT compile correctly on Windows alone because it uses POSIX system call
 3. Navigate to the repo:
    cd /mnt/d/<your-folder-path>/Operating-Systems/HWs/HW0
 4. Compile & run:
-- gcc consumer_producer.c -o consumer_producer
-- ./consumer_producer
+    - gcc consumer_producer.c -o consumer_producer
+    - ./consumer_producer
 
 ## References
 
