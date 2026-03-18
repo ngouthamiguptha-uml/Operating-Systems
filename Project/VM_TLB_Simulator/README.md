@@ -53,9 +53,9 @@ g++ main.cpp -o tlb_sim
 
 ## Libraries Used
 
-- <vector> → dynamic arrays  
-- <iostream> → input/output  
-- <cstdlib> → random number generation (rand())  
+- vector.h → dynamic arrays  
+- iostream.h → input/output  
+- cstdlib.h → random number generation (rand())  
 
 ## Results
 
