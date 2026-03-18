@@ -53,9 +53,9 @@ g++ main.cpp -o tlb_sim
 
 ## Libraries Used
 
-<vector> → dynamic arrays  
-<iostream> → input/output  
-<cstdlib> → random number generation (rand())  
+- <vector> → dynamic arrays  
+- <iostream> → input/output  
+- <cstdlib> → random number generation (rand())  
 
 ## Results
 
@@ -83,7 +83,7 @@ TLB Hit Rate: 0.99992
 - Increasing TLB size improves hit rate.
 - When TLB size ≥ number of pages:  
     Almost all accesses become hits after initial misses.
--Direct-mapped TLB may suffer from:  
+- Direct-mapped TLB may suffer from:  
     Conflict misses (multiple VPNs mapping to same index).
 
 ## Future Improvements:
