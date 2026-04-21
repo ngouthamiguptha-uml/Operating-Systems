@@ -116,7 +116,7 @@ public:
             groups.push_back(make_group(0, 2)); // helps 2-way+
             groups.push_back(make_group(1, 3)); // helps 4-way+
             groups.push_back(make_group(2, 5)); // helps 8-way+
-            groups.push_back(make_group(3, 7)); // strongest pressure
+            groups.push_back(make_group(3, 9)); // strongest pressure
 
             while ((int)trace.size() < accesses) {
                 for (const auto& g : groups) {
