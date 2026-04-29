@@ -6,15 +6,15 @@ A C++-based simulator to study Translation Lookaside Buffer (TLB) behavior under
 
 This project simulates a virtual memory system focusing on TLB performance. It evaluates:
 
-Replacement policies (LRU, FIFO, RANDOM)
-Associativity (Direct-mapped → Fully associative)
-Workload patterns (Sequential, Random, Looping, Conflict)
-Context switching effects (TLB flush impact)
+- Replacement policies (LRU, FIFO, RANDOM)
+- Associativity (Direct-mapped → Fully associative)
+- Workload patterns (Sequential, Random, Looping, Conflict)
+- Context switching effects (TLB flush impact)
 
 The simulator outputs:
 
-Hit rate
-Average Memory Access Time (AMAT)
+- Hit rate
+- Average Memory Access Time (AMAT)
 
 Results are exported to CSV and visualized using Python.
 
@@ -29,11 +29,11 @@ Implements a set-associative TLB with configurable:
 
 Key Features:
 - Supports LRU, FIFO, RANDOM
-- Uses:
-`last_used` → LRU
-`insert_time` → FIFO
+- Uses:  
+`last_used` → LRU  
+`insert_time` → FIFO  
 
-Set mapping via:
+Set mapping via:  
 `set_index = VPN % num_sets`
 
 Tradeoffs:
@@ -61,15 +61,15 @@ Tradeoffs:
 
 ### 3. Simulator (`Simulator.h`)
 
-Core execution engine.
+Core execution engine.  
 
-Workflow:
-Virtual Address → VPN
-       ↓
-   TLB Lookup
-       ↓
-Hit → return PFN
-Miss → PageTable lookup → Insert into TLB
+Workflow:  
+Virtual Address → VPN  
+       ↓  
+   TLB Lookup  
+       ↓  
+Hit → return PFN  
+Miss → PageTable lookup → Insert into TLB  
 
 Metrics tracked:
 - TLB hits/misses
@@ -77,7 +77,7 @@ Metrics tracked:
 - Hit rate
 - AMAT
 
-AMAT Formula:
+AMAT Formula:  
 `AMAT = TLB_HIT_COST + (1 - hit_rate) × (PT_WALK_COST + MEM_ACCESS)`
 
 Constants:
@@ -108,19 +108,19 @@ Key Design:
 
 Drives experiments:
 
-Experiments:
-🔸 EXP1: Policy Comparison
-Workloads: Sequential, Random, Looping
-Policies: LRU, FIFO, RANDOM
+Experiments:  
+1. EXP1: Policy Comparison  
+Workloads: Sequential, Random, Looping  
+Policies: LRU, FIFO, RANDOM  
 
-🔸 EXP2: Associativity Impact
-Direct-mapped → Fully associative
-Conflict workload
+2. EXP2: Associativity Impact  
+Direct-mapped → Fully associative  
+Conflict workload  
 
-🔸 EXP3: Context Switching
-TLB flush frequency variation
+3. EXP3: Context Switching  
+TLB flush frequency variation  
 
-Output:
+Output:  
 - Console results
 - CSV file (results.csv)
 
@@ -136,26 +136,26 @@ Plots:
 - Context Switch vs Hit Rate
 
 ## Steps to Compile & Run
-Compile
+Compile:    
 `g++ -std=c++17 main.cpp -o simulator`
 
-Run
+Run:  
 `./simulator`
 
-Generate Plots
+Generate Plots:  
 `python3 visualize.py`
 
 ## Libraries Used
-C++:
-`<vector>`
-`<unordered_map>`
-`<random>`
-`<iostream>`
-`<fstream>`
-`<iomanip>`
-Python:
-`matplotlib`
-`pandas`
+C++:  
+`<vector>`  
+`<unordered_map>`  
+`<random>`  
+`<iostream>`  
+`<fstream>`  
+`<iomanip>`  
+Python:  
+`matplotlib`  
+`pandas`  
 
 ## Results
 
