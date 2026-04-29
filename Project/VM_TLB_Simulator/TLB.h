@@ -27,8 +27,8 @@ struct TLBEntry {
 // One way (set) in a set-associative TLB
 struct TLBSet {
     std::vector<TLBEntry> ways;
-    TLBSet() {}
-    TLBSet(int num_ways) : ways(num_ways) {}
+
+    TLBSet(int num_ways = 0) : ways(num_ways) {}
 };
 
 /*
@@ -46,18 +46,18 @@ private:
     std::vector<TLBSet> sets;
     int time_counter;
 
-    int findVictim(int set_idx) {
-        TLBSet& s = sets[set_idx];
-        for (int i = 0; i < associativity; i++)
+    int findVictim(int set_idx) { // Find victim index in the set for replacement
+        TLBSet &s = sets[set_idx]; 
+        for (int i = 0; i < associativity; i++) // Check for invalid/empty entry first
             if (!s.ways[i].valid) return i;
 
-        if (policy == ReplacementPolicy::LRU) {
+        if (policy == ReplacementPolicy::LRU) { //LRU policy
             int lru_idx = 0;
             for (int i = 1; i < associativity; i++)
                 if (s.ways[i].last_used < s.ways[lru_idx].last_used)
                     lru_idx = i;
             return lru_idx;
-        } else if (policy == ReplacementPolicy::FIFO) {
+        } else if (policy == ReplacementPolicy::FIFO) { //FIFO policy
             int fifo_idx = 0;
             for (int i = 1; i < associativity; i++)
                 if (s.ways[i].insert_time < s.ways[fifo_idx].insert_time)
@@ -73,23 +73,23 @@ public:
         : total_entries(total), associativity(assoc), policy(p), time_counter(0)
     {
         num_sets = total_entries / associativity;
-        sets.resize(num_sets, TLBSet(associativity));
+        sets.resize(num_sets, TLBSet(associativity)); // Initialize sets with the correct number of ways
     }
 
     // Flush all entries (used during context switch)
     void flush() {
-        for (auto& s : sets)
-            for (auto& e : s.ways)
-                e.valid = false;
+        for (auto &s : sets)
+            for (auto &e : s.ways)
+                e.valid = false; // Invalidate all entries 
     }
 
     // Lookup VPN -> PFN. Returns -1 on miss.
     int lookup(int vpn) {
         time_counter++;
         int set_idx = vpn % num_sets;
-        TLBSet& s = sets[set_idx];
+        TLBSet &s = sets[set_idx]; // Check each way in the set for a hit
         for (int i = 0; i < associativity; i++) {
-            if (s.ways[i].valid && s.ways[i].vpn == vpn) {
+            if (s.ways[i].valid && s.ways[i].vpn == vpn) { //Hit
                 s.ways[i].last_used = time_counter;
                 return s.ways[i].pfn;
             }
@@ -100,9 +100,9 @@ public:
     // Insert (vpn, pfn) using configured replacement policy
     void insert(int vpn, int pfn) {
         time_counter++;
-        int set_idx = vpn % num_sets;
-        int victim  = findVictim(set_idx);
-        TLBEntry& e = sets[set_idx].ways[victim];
+        int set_idx = vpn % num_sets; // Determine which set to insert into based on VPN
+        int victim  = findVictim(set_idx); // Find victim index in the set for replacement
+        TLBEntry &e = sets[set_idx].ways[victim]; //insert new entry at victim index
         e.vpn         = vpn;
         e.pfn         = pfn;
         e.valid       = true;
@@ -110,9 +110,9 @@ public:
         e.insert_time = time_counter;
     }
 
-    int    getTotalEntries()  const { return total_entries; }
-    int    getAssociativity() const { return associativity; }
-    int    getNumSets()       const { return num_sets; }
+    int    getTotalEntries()  const { return total_entries; } // Total number of TLB entries
+    int    getAssociativity() const { return associativity; } //number of ways per set 
+    int    getNumSets()       const { return num_sets; } //number of sets in the TLB
     std::string getPolicyName() const {
         if (policy == ReplacementPolicy::LRU)  return "LRU";
         if (policy == ReplacementPolicy::FIFO) return "FIFO";

@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <string>
 
-class WorkloadGenerator {
+class WorkloadGenerator { // Generates memory access traces with different patterns to test TLB performance
 public:
     enum class WorkloadType {
         SEQUENTIAL,
@@ -19,25 +19,26 @@ public:
     // Return type is std::vector<int> to match Simulator::run(const std::vector<int>&)
     static std::vector<int> generate(int accesses, int max_address,
                                      WorkloadType type = WorkloadType::RANDOM,
-                                     int page_size = 4096,
-                                     int hot_pages = 50,
-                                     int conflict_vpns = 80)
+                                     int page_size = 4096, // default 4 KB pages
+                                     int hot_pages = 50) // used for LOOPING and WORKING_SET. Number of frequently reused pages.
+                                     
     {
         static std::mt19937 rng(42);
-        std::vector<int> trace;
-        trace.reserve(accesses);
+        
+        std::vector<int> trace; //creates a vector to hold the generated memory access trace
+        trace.reserve(accesses); //reserves memory for the specified number of accesses (pre-allocates memory)
 
         switch (type) {
         case WorkloadType::SEQUENTIAL:
-            if (max_address <= 0) return trace;
+            if (max_address <= 0) return trace; // Guard against invalid max_address
             for (int i = 0; i < accesses; i++) {
                 trace.push_back(((long long)i * page_size) % max_address);
             }
             break;
 
         case WorkloadType::RANDOM: {
-            if (max_address <= 0) return trace;
-            std::uniform_int_distribution<int> full_dist(0, max_address - 1);
+            if (max_address <= 0) return trace; // Guard against invalid max_address
+            std::uniform_int_distribution<int> full_dist(0, max_address - 1); //creates a uniform distribution to generate random addresses between 0 and max_address - 1
             for (int i = 0; i < accesses; i++) {
                 trace.push_back(full_dist(rng));
             }
@@ -45,17 +46,17 @@ public:
         }
 
         case WorkloadType::LOOPING: {
-            if (max_address <= 0) return trace;
-            if (hot_pages <= 0) return trace;
+            if (max_address <= 0) return trace; // Guard against invalid max_address
+            if (hot_pages <= 0) return trace; // Guard against invalid hot_pages
 
             int hot_set_bytes = hot_pages * page_size;
-            if (hot_set_bytes <= 0) return trace;
+            if (hot_set_bytes <= 0) return trace; // Guard against overflow or invalid hot_set_bytes
 
             std::uniform_int_distribution<int> full_dist(0, max_address - 1);
             std::uniform_int_distribution<int> hot_dist(0, hot_set_bytes - 1);
 
-            int hot  = static_cast<int>(accesses * 0.80);
-            int cold = accesses - hot;
+            int hot  = static_cast<int>(accesses * 0.80); // 80% of accesses target hot pages
+            int cold = accesses - hot; // 20% of accesses target cold pages
 
             for (int i = 0; i < hot; i++) {
                 trace.push_back(hot_dist(rng));
@@ -64,22 +65,21 @@ public:
                 trace.push_back(full_dist(rng));
             }
 
-            std::shuffle(trace.begin(), trace.end(), rng);
+            std::shuffle(trace.begin(), trace.end(), rng); // Randomize the order of accesses to mix hot and cold pages
             break;
         }
 
         case WorkloadType::WORKING_SET: {
-            if (hot_pages <= 0) return trace;
+            if (hot_pages <= 0) return trace; // Guard against invalid or no hot_pages
 
-            std::vector<int> hot_vpns;
-            hot_vpns.reserve(hot_pages);
+            std::vector<int> hot_addrs; //Creates a vector of hot addresses
+            hot_addrs.reserve(hot_pages);
 
             for (int p = 0; p < hot_pages; p++) {
-                hot_vpns.push_back(p * page_size);
+                hot_addrs.push_back(p * page_size);
             }
 
-            for (int i = 0; i < accesses; i++) {
-                trace.push_back(hot_vpns[i % hot_vpns.size()]);
+            for (int i = 0; i < accesses; i++) { //Generates accesses by repeatedly cycling through the hot addresses
             }
             break;
         }
@@ -130,7 +130,7 @@ public:
         }
 
         default: {
-            if (max_address <= 0) return trace;
+            if (max_address <= 0) return trace; // Guard against invalid max_address
             std::uniform_int_distribution<int> full_dist(0, max_address - 1);
             for (int i = 0; i < accesses; i++) {
                 trace.push_back(full_dist(rng));

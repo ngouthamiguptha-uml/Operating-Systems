@@ -1,9 +1,9 @@
 #ifndef PAGETABLE_H
 #define PAGETABLE_H
 
-#include <vector>
+//#include <vector>
 #include <unordered_map>
-#include <stdexcept>
+//#include <stdexcept>
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Two-Level Page Table
@@ -34,26 +34,26 @@ public:
         l2_size = 1 << l2_bits;
     }
 
-    // Translate VPN → PFN (allocates new frame on first access)
+    // Translates a VPN to a PFN (allocates new frame on first access)
     int getFrameByVPN(int vpn) {
-        int l1_idx = (vpn >> l2_bits) & (l1_size - 1);
-        int l2_idx = vpn & (l2_size - 1);
-        auto& l2   = l2_tables[l1_idx];
-        auto  it   = l2.find(l2_idx);
-        if (it == l2.end()) {
-            l2[l2_idx] = next_pfn++;
-            return l2[l2_idx];
+        int l1_idx = (vpn >> l2_bits) & (l1_size - 1); // Extract L1 index
+        int l2_idx = vpn & (l2_size - 1); // Extract L2 index
+        auto &l2   = l2_tables[l1_idx]; // Get or create L2 table for this L1 index
+        auto  l2_iter   = l2.find(l2_idx); // Check if L2 entry exists
+        if (l2_iter == l2.end()) { // Miss: allocate new PFN and insert into L2
+            l2[l2_idx] = next_pfn++; // Assign next PFN and increment
+            return l2[l2_idx]; //  Return the newly allocated PFN
         }
-        return it->second;
+        return l2_iter->second; // Hit: return existing PFN
     }
 
     // Invalidate all L2 entries for a range of L1 indices (context switch)
     void flushProcess(int l1_start, int l1_end) {
         for (int i = l1_start; i <= l1_end && i < l1_size; i++)
-            l2_tables.erase(i);
+            l2_tables.erase(i); // Remove entire L2 table for this L1 index
     }
 
-    int getTotalAllocatedFrames() const { return next_pfn; }
+    int getTotalAllocatedFrames() const { return next_pfn; } // Total number of allocated PFNs 
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
