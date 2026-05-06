@@ -119,12 +119,12 @@ std::vector<SimulationResult> exp_assoc(int accesses, int page_size) {
 // 512 VPNs random — enough reuse that TLB warmup matters
 // Each flush kills warm TLB entries, clearly visible at high flush frequencies
 std::vector<SimulationResult> exp_ctx(int accesses, int page_size) {
-    printHeader("EXP 3: Context Switch Impact (LRU, 4-way, Random)");
+    printHeader("EXP 3: Context Switch Impact (LRU, 4-way, Working_Set)");
 
-    const int max_addr = 512 * page_size;
+    const int max_addr = 80 * page_size;
     
     auto trace = WorkloadGenerator::generate(accesses, max_addr,
-                     WorkloadGenerator::WorkloadType::RANDOM, page_size); // Generate a random workload with 512 unique VPNs
+                     WorkloadGenerator::WorkloadType::WORKING_SET, page_size); // Generate a working set workload with 80 unique VPNs
 
     std::vector<int> intervals = {0, 10000, 5000, 2000, 500}; // Context switch intervals (0 means no context switches, 10,000 means flush every 10k accesses, etc.)
     

@@ -23,9 +23,9 @@ public:
                                      int hot_pages = 50) // used for LOOPING and WORKING_SET. Number of frequently reused pages.
                                      
     {
-        static std::mt19937 rng(42);
+        static std::mt19937 rng(42); //Mersenne Twister random number generator seeded with a fixed value for reproducibility
         
-        std::vector<int> trace; //creates a vector to hold the generated memory access trace
+        std::vector<int> trace; //creates an empty vector to hold the generated memory access trace
         trace.reserve(accesses); //reserves memory for the specified number of accesses (pre-allocates memory)
 
         switch (type) {
@@ -70,6 +70,8 @@ public:
         }
 
         case WorkloadType::WORKING_SET: {
+            int hot_pages = max_address / page_size; //80 hot pages by default
+
             if (hot_pages <= 0) return trace; // Guard against invalid or no hot_pages
 
             std::vector<int> hot_addrs; //Creates a vector of hot addresses
@@ -80,47 +82,41 @@ public:
             }
 
             for (int i = 0; i < accesses; i++) { //Generates accesses by repeatedly cycling through the hot addresses
+               // int idx = i % hot_pages; // cycle through working set
+                int idx = rand() % hot_pages; // randomize within working set
+                trace.push_back(hot_addrs[idx]);                
             }
             break;
         }
 
         case WorkloadType::CONFLICT: {
             // This workload is designed to demonstrate associativity more logically.
-            // Pages in each group differ by 64 VPNs, so they alias to the same set
-            // for num_sets = 64, 32, 16, and 8.
-            //
-            // Group sizes:
-            //   2-page group -> fits in 2-way and above
-            //   3-page group -> fits in 4-way and above
-            //   5-page group -> fits in 8-way and above
-            //   7-page group -> strong pressure, still fits in fully-associative
-            //
-            // Total unique VPNs = 2 + 3 + 5 + 7 = 17 (< 64),
-            // so fully-associative should approach 100% after warmup.
+            // It creates pages that map to the same TLB sets.
 
-            const int stride = 64;
+            const int stride = 64; //because TLB size is 64 entries, this stride will cause all addresses to map to the same set in a direct-mapped TLB, and create varying levels of conflict for higher associativities.
 
-            std::vector<std::vector<int>> groups;
-
-            auto make_group = [&](int base, int size) {
+            std::vector<std::vector<int>> groups; //stores groups of addresses that will conflict with each other (maps to same set index of TLB) in the TLB. 
+            auto make_group = [&](int base, int size) { //base is the starting page number, size is how many pages in the group.
+                
                 std::vector<int> g;
                 g.reserve(size);
+                
                 for (int k = 0; k < size; k++) {
                     int vpn = base + k * stride;
-                    g.push_back(vpn * page_size);
+                    g.push_back(vpn * page_size); //convert VPN to a virtual address
                 }
                 return g;
             };
 
-            // base values kept below 8 so mapping stays clean for all tested configs
-            groups.push_back(make_group(0, 2)); // helps 2-way+
-            groups.push_back(make_group(1, 3)); // helps 4-way+
-            groups.push_back(make_group(2, 5)); // helps 8-way+
-            groups.push_back(make_group(3, 9)); // strongest pressure
+            // test groups designed to create different levels of conflict for different associativities:
+            groups.push_back(make_group(0, 2));  // Two pages competing in one set
+            groups.push_back(make_group(1, 3)); 
+            groups.push_back(make_group(2, 5)); 
+            groups.push_back(make_group(3, 9)); 
 
             while ((int)trace.size() < accesses) {
-                for (const auto& g : groups) {
-                    for (int addr : g) {
+                for (const auto &g : groups) { //Loop through each conflict group
+                    for (int addr : g) { //Loop through each address in the group
                         if ((int)trace.size() >= accesses) break;
                         trace.push_back(addr);
                     }

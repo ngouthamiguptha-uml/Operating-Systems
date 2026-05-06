@@ -1,9 +1,7 @@
 #ifndef PAGETABLE_H
 #define PAGETABLE_H
 
-//#include <vector>
 #include <unordered_map>
-//#include <stdexcept>
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Two-Level Page Table
